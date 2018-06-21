@@ -1,0 +1,3391 @@
+openapi: 3.0.0
+servers:
+# Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/Finorator/PoppyQuiz/1.0.3
+  - url: 'https://virtserver.swaggerhub.com/Finorator/PoppyQuiz/1.0.0'
+  - url: 'http://virtserver.swaggerhub.com/Finorator/PoppyQuiz/1.0.0'
+info:
+  description: >
+    This is an API specifications for PoppyQuiz (A real time multi player social
+    trivia platform).  You can find out more about PoppyQuiz at 
+
+    [https://poppyquiz.com](https://poppyquiz.com) or on
+
+    at [twitter @poppyquiz](https://twitter.com/poppyquiz)
+
+    at [facebook @poppyquiz](https://www.facebook.com/poppyquiz/).
+  version: "1.0.3"
+  title: PoppyQuiz API
+  termsOfService: 'https://poppyquiz.com/term-condition'
+  contact:
+    email: care@poppyquiz.com
+  license:
+    name: 'Licensed by [finorator inc]'
+tags:
+  - name: category
+    description: All resources and operations about poppyquiz categories
+  - name: topic
+    description: All resources and operations about poppyquiz topics
+  - name: question
+    description: All resources and operations about poppyquiz questions
+  - name: user
+    description: All resources and operations about poppyquiz users
+  - name: interest
+    description: All resources and operations about master and users interests
+  - name: game
+    description: All resources and operations about games
+  - name: post
+    description: All resources and operations about posts
+  - name: chat
+    description: All resources and operations about chat
+  - name: notification
+    description: All resources and operations about users notifications
+  - name: others
+    description: All other resources and operations
+paths:
+  /register:
+    post:
+      tags:
+        - user
+      summary: Register user with App
+      description: Register user with App.
+      operationId: registerUser
+      requestBody:
+        $ref: '#/components/requestBodies/SignInRequest'      
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      security: []
+  /login:
+    post:
+      tags:
+        - user
+      summary: Logs user into App
+      description: Logs user into App
+      operationId: loginUser
+      requestBody:
+        $ref: '#/components/requestBodies/SignInRequest'      
+      responses:
+        '200':
+          description: successful operation
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+            X-Expires-After:
+              description: date in UTC when token expires
+              schema:
+                type: string
+                format: date-time
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignInApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      security: []
+  /auth/social:
+    post:
+      tags:
+        - user
+      summary: Register or SignIn or link user to social
+        account into app using Google/Facebook/Llinkedin account
+      description: Register new user, SignIn existing user and link existing user to social
+        account into application using Google/Facebook/Linkedin account        
+      operationId: authSocial
+      responses:
+        '200':
+          description: successful operation
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+            X-Expires-After:
+              description: date in UTC when token expires
+              schema:
+                type: string
+                format: date-time
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Invalid username/password supplied
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - redirectUrl
+                - provider
+              properties:
+                redirectUrl:
+                  type: string
+                  format: url
+                provider:
+                  type: string
+                  description: The login provider google or facebook or twitter
+                  enum:
+                    - google
+                    - facebook
+                    - linkedin
+        required: true
+  /logout:
+    post:
+      tags:
+        - user
+      summary: Logs out current logged in user session
+      description: Logs out current logged in user session
+      operationId: logoutUser
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /contact:
+    post:
+      tags:
+        - user
+      summary: Send message to App care team
+      description: Send message to App care team.
+      operationId: contact
+      requestBody:
+        $ref: '#/components/requestBodies/ContactRequest'      
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        '201':
+          $ref: '#/components/responses/ApiResponse'                
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      security: []                  
+  /subscribe:
+    post:
+      tags:
+        - user
+      summary: Subscribe to App news and updates
+      description: Subscribe to App news and updates.
+      operationId: subscribe
+      requestBody:
+        $ref: '#/components/requestBodies/SubscribeRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        '201':
+          $ref: '#/components/responses/ApiResponse'                
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      security: []          
+  /password/forgot:
+    post:
+      tags:
+        - user
+      summary: Retrieve your App password
+      description: Retrieve your App password.
+      operationId: forgotPassword
+      requestBody:
+        $ref: '#/components/requestBodies/ForgotPasswordRequest'      
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        '201':
+          $ref: '#/components/responses/ApiResponse'                 
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /password/reset:
+    post:
+      tags:
+        - user
+      summary: Reset your App password
+      description: Reset your App password.
+      operationId: resetPassword
+      requestBody:
+        $ref: '#/components/requestBodies/ResetPasswordRequest'      
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        '201':
+          $ref: '#/components/responses/ApiResponse'                 
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /refer:
+    post:
+      tags:
+        - user
+      summary: refer Refer friends to join app using their email
+      description: Refer friends to join app using their email
+      operationId: refer
+      requestBody:
+        $ref: '#/components/requestBodies/ReferralRequest'        
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        '201':
+          $ref: '#/components/responses/ApiResponse'                 
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/refer/{userId}':
+    get:
+      tags:
+        - user
+      summary: Get your all referral
+      description: Get your all referral.
+      operationId: getReferrals
+      parameters:
+        - name: userId
+          in: path
+          description: Your User Id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Referral'
+        '201':
+          $ref: '#/components/responses/ApiResponse'                 
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    put:
+      tags:
+        - user
+      summary: Refer friends to join app using your referral link & Update referal status when a friend joined through your referral link
+      description: Refer friends to join app using your referral link & Update referal status when a friend joined through your referral link
+      operationId: addOrUpdateReferral
+      parameters:
+        - name: userId
+          in: path
+          description: Friend's userId who has set you request to join
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        $ref: '#/components/requestBodies/ReferralRequest'             
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'  
+        '201':
+          $ref: '#/components/responses/ApiResponse'                 
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /users:
+    post:
+      tags:
+        - user
+      summary: Create user profile by user on first login
+      description: Create user profile by user on first login.
+      operationId: createUserProfile
+      requestBody:
+        $ref: '#/components/requestBodies/UserProfile'      
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse' 
+        '201':
+          $ref: '#/components/responses/ApiResponse'                 
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    get:
+      tags:
+        - user
+      summary: Get paginated user profile summary card based on query parameters
+      operationId: getUserProfile
+      parameters:
+        - name: name
+          in: query
+          description: FirstName or LastName or UserName of user
+          schema:
+            type: string
+        - name: gender
+          in: query
+          description: Gender of user
+          schema:
+            type: string
+        - name: ageStart
+          in: query
+          description: Age of user greater than and equal to this
+          schema:
+            type: integer
+        - name: ageEnd
+          in: query
+          description: Age of user less than and equal to this
+          schema:
+            type: integer
+        - name: country
+          in: query
+          description: Country of user
+          schema:
+            type: string
+        - name: location
+          in: query
+          description: >-
+            Find user near 100 km of comma seperated latitude and longitude
+            value (example location=40.7127837,-74.0059413)
+          schema:
+            type: string
+        - name: interests
+          in: query
+          description: Array of interestIds
+          schema:
+            type: array
+            items:
+              type: integer
+        - name: offset
+          in: query
+          description: Starting position of result set
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          description: Number of result set you want to retreive
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          $ref: '#/components/responses/ProfileApiResponse'
+        '201':
+          $ref: '#/components/responses/ProfileApiResponse'                 
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      security:
+        - Oauth2:
+            - 'read:profiles'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+  '/users/{userId}':
+    get:
+      tags:
+        - user
+      summary: Get user profile by Id
+      operationId: getUserProfileById
+      parameters:
+        - name: userId
+          in: path
+          description: The userId that needs to be fetched. Use 55111234567890 for testing.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    put:
+      tags:
+        - user
+      summary: Updated user profile by Id
+      description: This can only be done by the logged in user.
+      operationId: updateUserProfile
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+        - name: userId
+          in: path
+          description: userId that need to be updated
+          required: true
+          schema:
+            type: string
+      responses:
+        '400':
+          description: Invalid user supplied
+        '404':
+          description: User not found
+      requestBody:
+        $ref: '#/components/requestBodies/UserProfile'
+    delete:
+      tags:
+        - user
+      summary: Delete user profile by userId
+      description: This can only be done by the logged in user.
+      operationId: deleteUserProfile
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+        - name: userId
+          in: path
+          description: The userId that needs to be deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        '400':
+          description: Invalid userId supplied
+        '404':
+          description: User not found
+  /upload/image:
+    post:
+      tags:
+        - user
+      summary: Upload image by user
+      description: Update user profile picture or wallpaper
+      operationId: uploadImage
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        '400':
+          description: Invalid user supplied
+        '404':
+          description: User not found
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - name
+                - type
+                - content
+              properties:
+                userId:
+                  type: integer
+                name:
+                  type: string
+                type:
+                  type: string
+                  description: The image uploaded for
+                  enum:
+                    - profile
+                    - wallpaper
+                    - topic
+                content:
+                  type: string
+                  format: base64
+        required: true
+  '/users/{userId}/followers':
+    get:
+      tags:
+        - user
+      summary: Get followers of a user
+      description: Returns a paginated list of followers for an user
+      operationId: getFollowersOfUser
+      parameters:
+        - name: userId
+          in: path
+          description: The unique user Id
+          required: true
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          description: Starting position of result set
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          description: Number of result set you want to retreive
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserProfile'
+        '400':
+          description: Invalid user ID supplied
+        '404':
+          description: User not found
+      security:
+        - Oauth2:
+            - 'read:profiles'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+    post:
+      tags:
+        - user
+      summary: block followers of a user
+      operationId: blockFollowers
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+        - name: userId
+          in: path
+          required: true
+          description: The id of a user
+          schema:
+            type: integer
+      responses:
+        '405':
+          description: Invalid input
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: integer
+        description: Array of followerIds
+        required: true
+  '/users/{userId}/followings':
+    get:
+      tags:
+        - user
+      summary: Get all users followed by a user
+      description: Returns a paginated list of users followed by a user
+      operationId: getFollowingsOfUser
+      parameters:
+        - name: userId
+          in: path
+          description: The unique user Id
+          required: true
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          description: Starting position of result set
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          description: Number of result set you want to retreive
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserProfile'
+        '400':
+          description: Invalid user ID supplied
+        '404':
+          description: User not found
+      security:
+        - Oauth2:
+            - 'read:profiles'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+  '/users/{userId}/topics':
+    get:
+      tags:
+        - user
+      summary: Get topics created by user
+      description: Returns user's topics
+      operationId: getUserTopics
+      parameters:
+        - name: userId
+          in: path
+          description: The unique user Id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Topic'
+        '400':
+          description: Invalid user ID supplied
+        '404':
+          description: User not found
+      security:
+        - Oauth2:
+            - 'read:topics'
+            - 'read:profiles'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+  '/users/{userId}/summary':
+    get:
+      tags:
+        - user
+      summary: Get user's profile summary
+      description: >-
+        Returns total game played, number of topics created, number of topics
+        followed, number of followers, number of followings by a user
+      operationId: getUserProfileSummary
+      parameters:
+        - name: userId
+          in: path
+          description: The unique user Id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSummary'
+        '400':
+          description: Invalid user ID supplied
+        '404':
+          description: User not found
+      security:
+        - Oauth2:
+            - 'read:profiles'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+  '/users/{userId}/achievements':
+    get:
+      tags:
+        - user
+      summary: Get user's achievements
+      description: Returns user's achievements
+      operationId: getUserAchievements
+      parameters:
+        - name: userId
+          in: path
+          description: The unique user Id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserAchievement'
+        '400':
+          description: Invalid user ID supplied
+        '404':
+          description: User not found
+      security:
+        - Oauth2:
+            - 'read:profiles'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+  '/users/{userId}/games':
+    get:
+      tags:
+        - user
+      summary: Get paginated user's game history
+      description: Returns user's game history
+      operationId: getUserGames
+      parameters:
+        - name: userId
+          in: path
+          description: The unique user Id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Game'
+        '400':
+          description: Invalid user ID supplied
+        '404':
+          description: User not found
+      security:
+        - Oauth2:
+            - 'read:profiles'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+  '/users/{userId}/games/summary':
+    get:
+      tags:
+        - user
+      summary: Get user's game summary
+      description: Returns user's game summary
+      operationId: getUserGamesSummary
+      parameters:
+        - name: userId
+          in: path
+          description: The unique user Id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameSummary'
+        '400':
+          description: Invalid user ID supplied
+        '404':
+          description: User not found
+      security:
+        - Oauth2:
+            - 'read:profiles'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+  '/users/{userId}/followings/suggestion':
+    get:
+      tags:
+        - user
+      summary: Get suggested users to follow
+      description: >-
+        Returns a paginated list of suggested users. user followed you, users
+        played or followed a topic created by you, User with similar interest as
+        yours
+      operationId: getFollowingsSuggestion
+      parameters:
+        - name: userId
+          in: path
+          description: The unique user Id
+          required: true
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          description: Starting position of result set
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          description: Number of result set you want to retreive
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserProfile'
+        '400':
+          description: Invalid user ID supplied
+        '404':
+          description: User not found
+      security:
+        - Oauth2:
+            - 'read:profiles'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+  '/users/{userId}/topics/suggestion':
+    get:
+      tags:
+        - user
+      summary: Get suggested topics to follow
+      description: >-
+        Returns a paginated list of suggested topics. you played in the topic
+        but not following, topic's category matches with your interest's
+        category
+      operationId: getTopicsSuggestion
+      parameters:
+        - name: userId
+          in: path
+          description: The unique user Id
+          required: true
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          description: Starting position of result set
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          description: Number of result set you want to retreive
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Topic'
+        '400':
+          description: Invalid user ID supplied
+        '404':
+          description: User not found
+      security:
+        - Oauth2:
+            - 'read:profiles'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+  '/users/{userId}/{profileId}}/topics':
+    get:
+      tags:
+        - user
+      summary: Get mutal topics followed by two users
+      description: >-
+        Returns a paginated list of mutual topics between you and the profile
+        you are visiting
+      operationId: getMutualTopics
+      parameters:
+        - name: userId
+          in: path
+          description: The unique user Id (you)
+          required: true
+          schema:
+            type: integer
+        - name: profileId
+          in: path
+          description: The unique user Id of the profile you are visiting
+          required: true
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          description: Starting position of result set
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          description: Number of result set you want to retreive
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Topic'
+        '400':
+          description: Invalid user ID or Profile Id supplied
+        '404':
+          description: User(s) not found
+      security:
+        - Oauth2:
+            - 'read:profiles'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+  '/users/{userId}/{profileId}}/games':
+    get:
+      tags:
+        - user
+      summary: Get all games played between two users
+      description: >-
+        Returns a paginated list of games played between you and the profile you
+        are visiting
+      operationId: getMutualGames
+      parameters:
+        - name: userId
+          in: path
+          description: The unique user Id (you)
+          required: true
+          schema:
+            type: integer
+        - name: profileId
+          in: path
+          description: The unique user Id of the profile you are visiting
+          required: true
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          description: Starting position of result set
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          description: Number of result set you want to retreive
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Game'
+        '400':
+          description: Invalid user ID or Profile Id supplied
+        '404':
+          description: User(s) not found
+      security:
+        - Oauth2:
+            - 'write:profiles'
+            - 'read:profiles'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+  '/users/{userId}/followings/{followerId}':
+    post:
+      tags:
+        - user
+      summary: follow an existing user
+      operationId: followUser
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+        - name: userId
+          in: path
+          required: true
+          description: The id of a user
+          schema:
+            type: integer
+        - name: followerId
+          in: path
+          required: true
+          description: The user id of the follower
+          schema:
+            type: integer
+      responses:
+        '405':
+          description: Invalid input
+    put:
+      tags:
+        - user
+      summary: unfollow an existing user
+      operationId: unfollowUser
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+        - name: userId
+          in: path
+          required: true
+          description: The id of a specific user
+          schema:
+            type: integer
+        - name: followerId
+          in: path
+          required: true
+          description: The user id of the follower
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserFollowing'
+        '400':
+          description: Invalid user id or follower id supplied
+        '404':
+          description: User or follower not found
+        '405':
+          description: Validation exception
+  /interests:
+    post:
+      tags:
+        - interest
+      summary: Set all interests for the application
+      description: Set all interests for the application.
+      operationId: setinterests
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: successful operation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              xml:
+                name: option
+                wrapped: true
+              items:
+                $ref: '#/components/schemas/Interest'
+        description: Created interests object
+        required: true
+    get:
+      tags:
+        - interest
+      summary: Get all interests for the application
+      description: Get all interests for the application.
+      operationId: getInterests
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Interest'
+  '/interests/{userId}':
+    post:
+      tags:
+        - interest
+      summary: Set your interests
+      description: Set your interests.
+      operationId: setUserInterests
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+        - name: userId
+          in: path
+          description: usedId of user
+          required: true
+          schema:
+            type: integer
+      responses:
+        default:
+          description: successful operation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              xml:
+                name: option
+                wrapped: true
+              items:
+                $ref: '#/components/schemas/UserInterest'
+        description: Created interests object
+        required: true
+    get:
+      tags:
+        - interest
+      summary: Get your interests
+      description: Get your interests.
+      operationId: getUserInterests
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+        - name: userId
+          in: path
+          description: usedId of user
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserInterest'
+        '400':
+          description: Invalid userId value
+  /categories:
+    post:
+      tags:
+        - category
+      summary: Add one or more new categories to app
+      operationId: addCategories
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        '405':
+          description: Invalid input
+      security:
+        - Oauth2:
+            - 'write:categories'
+            - 'read:categories'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Category'
+        description: category object that needs to be added
+        required: true
+    get:
+      tags:
+        - category
+      summary: get all categories of app
+      operationId: getCategories
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+        - name: offset
+          in: query
+          description: Starting position of result set
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          description: No of result set you want to retreive
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+      security:
+        - Oauth2:
+            - 'read:categories'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+  '/categories/{categoryId}':
+    put:
+      tags:
+        - category
+      summary: Update an existing category
+      operationId: updateCategory
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+        - name: categoryId
+          in: path
+          required: true
+          description: The unique category id
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          description: Invalid category id supplied
+        '404':
+          description: Category not found
+        '405':
+          description: Validation exception
+      security:
+        - Oauth2:
+            - 'write:categories'
+            - 'read:categories'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+        required: true
+    get:
+      tags:
+        - category
+      summary: Get category by id
+      description: Returns a single category
+      operationId: getCategoryById
+      parameters:
+        - name: categoryId
+          in: path
+          description: The unique category id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          description: Invalid Category id supplied
+        '404':
+          description: Category not found
+      security:
+        - Oauth2:
+            - 'read:categories'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+    delete:
+      tags:
+        - category
+      summary: Deletes a category
+      operationId: deleteCategory
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+        - name: categoryId
+          in: path
+          description: category id to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        '400':
+          description: Invalid Category name supplied
+        '404':
+          description: Category not found
+      security:
+        - Oauth2:
+            - 'write:categories'
+            - 'read:categories'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+  '/categories/{categoryId}/topics':
+    put:
+      tags:
+        - category
+        - topic
+      summary: Associate existing topics to an existing category
+      operationId: addTopicsToCategory
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+        - name: categoryId
+          in: path
+          required: true
+          description: The unique category id
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Topic'
+        '400':
+          description: Invalid topic ids supplied
+        '404':
+          description: Category not found
+        '405':
+          description: Validation exception
+      security:
+        - Oauth2:
+            - 'write:categories'
+            - 'read:categories'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/addTopicsToCategoryTopics'
+    get:
+      tags:
+        - category
+        - topic
+      summary: Get topics for a category by id
+      description: Returns a paginated list of topics for a category
+      operationId: getTopicsOfCategory
+      parameters:
+        - name: categoryId
+          in: path
+          description: The unique category id
+          required: true
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          description: Starting position of result set
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          description: No of result set you want to retreive
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Topic'
+        '400':
+          description: Invalid Category id supplied
+        '404':
+          description: Category not found
+      security:
+        - Oauth2:
+            - 'read:categories'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+    delete:
+      tags:
+        - category
+        - topic
+      summary: Disassociate an existing topics from an existing category
+      operationId: deleteTopicsFromCategory
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+        - name: categoryId
+          in: path
+          description: category id to delete link between topics and category
+          required: true
+          schema:
+            type: integer
+      responses:
+        '400':
+          description: Invalid Category id supplied
+        '404':
+          description: Category not found
+      security:
+        - Oauth2:
+            - 'write:categories'
+            - 'read:categories'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+  /topics:
+    post:
+      tags:
+        - topic
+      summary: Add one or more new topic to poppyquiz
+      operationId: addTopics
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        '405':
+          description: Invalid input
+      security:
+        - Oauth2:
+            - 'write:topics'
+            - 'read:topics'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Topic'
+        description: topic object that needs to be added
+        required: true
+    get:
+      tags:
+        - topic
+      summary: get all topics of app with pagination
+      operationId: getTopics
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+        - name: offset
+          in: query
+          description: Starting position of result set
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          description: No of result set you want to retreive
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Topic'
+      security:
+        - Oauth2:
+            - 'read:topics'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+  '/topics/{topicId}':
+    patch:
+      tags:
+        - topic
+      summary: Update an existing topic
+      operationId: updateTopic
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+        - name: topicId
+          in: path
+          required: true
+          description: The id of a specific topic
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Topic'
+        '400':
+          description: Invalid topic id supplied
+        '404':
+          description: Topic not found
+        '405':
+          description: Validation exception
+      security:
+        - Oauth2:
+            - 'write:topics'
+            - 'read:topics'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/PatchRequest'
+    get:
+      tags:
+        - topic
+      summary: Get topic by id
+      description: Returns a single topic
+      operationId: getTopicById
+      parameters:
+        - name: topicId
+          in: path
+          description: ID of Topic to return
+          required: true
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          description: Starting position of result set
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          description: No of result set you want to retreive
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Topic'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Topic not found
+    delete:
+      tags:
+        - topic
+      summary: Deletes a topic
+      operationId: deleteTopic
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+        - name: topicId
+          in: path
+          description: topic id to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        '400':
+          description: Invalid topic id supplied
+        '404':
+          description: Topic not found
+      security:
+        - Oauth2:
+            - 'write:topics'
+            - 'read:topics'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+  '/topics/{topicId}/summary/{userId}':
+    get:
+      tags:
+        - topic
+      summary: Get topic summary
+      description: >-
+        Returns total games played, number of followers, Top 3 scores's profile,
+        your rank and score, all avaliable levels and their stages, your current
+        level and stage
+      operationId: getTopicSummary
+      parameters:
+        - name: topicId
+          in: path
+          description: The unique topic Id
+          required: true
+          schema:
+            type: integer
+        - name: userId
+          in: path
+          description: The unique user Id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Invalid topic ID supplied
+        '404':
+          description: Topic not found
+      security:
+        - Oauth2:
+            - 'read:topics'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+  '/topics/{topicId}/questions':
+    put:
+      tags:
+        - topic
+        - question
+      summary: Associate existing question to an existing topic
+      operationId: addQuestionsToTopic
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+        - name: topicId
+          in: path
+          required: true
+          description: The id of a specific topic
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Question'
+        '400':
+          description: Invalid question ids supplied
+        '404':
+          description: Topic not found
+        '405':
+          description: Validation exception
+      security:
+        - Oauth2:
+            - 'write:topics'
+            - 'read:topics'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: integer
+        description: The array of questionIds
+        required: true
+    get:
+      tags:
+        - topic
+        - question
+      summary: Get questions of a topic by Id
+      description: Returns a paginated list of questions for a topic
+      operationId: getQuestionOfTopic
+      parameters:
+        - name: topicId
+          in: path
+          description: The unique topic Id
+          required: true
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          description: Starting position of result set
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          description: Number of result set you want to retreive
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Question'
+        '400':
+          description: Invalid topic ID supplied
+        '404':
+          description: Topic not found
+      security:
+        - Oauth2:
+            - 'read:categories'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+    delete:
+      tags:
+        - topic
+        - question
+      summary: Disassociate existing questions from an existing topic
+      operationId: deleteQuestionsFromTopic
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+        - name: topicId
+          in: path
+          description: topic id to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        '400':
+          description: Invalid topic id supplied
+        '404':
+          description: Topic not found
+      security:
+        - Oauth2:
+            - 'write:questions'
+            - 'read:questions'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+  '/topics/{topicId}/followers':
+    get:
+      tags:
+        - topic
+      summary: Get followers of a topic
+      description: Returns a paginated list of questions for a topic
+      operationId: getFollowersOfTopic
+      parameters:
+        - name: topicId
+          in: path
+          description: The unique topic Id
+          required: true
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          description: Starting position of result set
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          description: Number of result set you want to retreive
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '400':
+          description: Invalid topic ID supplied
+        '404':
+          description: Topic not found
+      security:
+        - Oauth2:
+            - 'read:topics'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+  '/topics/{topicId}/following/{followerId}':
+    post:
+      tags:
+        - topic
+      summary: follow an existing topic
+      operationId: followTopic
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+        - name: topicId
+          in: path
+          required: true
+          description: The id of a specific topic
+          schema:
+            type: integer
+        - name: followerId
+          in: path
+          required: true
+          description: The user id of the follower
+          schema:
+            type: integer
+      responses:
+        '405':
+          description: Invalid input
+      security:
+        - Oauth2:
+            - 'write:topics'
+            - 'read:topics'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+    put:
+      tags:
+        - topic
+      summary: unfollow an existing topic
+      operationId: unfollowTopic
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+        - name: topicId
+          in: path
+          required: true
+          description: The id of a specific topic
+          schema:
+            type: integer
+        - name: followerId
+          in: path
+          required: true
+          description: The user id of the follower
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TopicFollowing'
+        '400':
+          description: Invalid topic id or follower id supplied
+        '404':
+          description: Topic or user not found
+        '405':
+          description: Validation exception
+      security:
+        - Oauth2:
+            - 'write:topics'
+            - 'read:topics'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+  /questions:
+    post:
+      tags:
+        - question
+      summary: Add one or more new question
+      operationId: addQuestions
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        '405':
+          description: Invalid input
+      security:
+        - Oauth2:
+            - 'write:questions'
+            - 'read:questions'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Question'
+        description: question object that needs to be added
+        required: true
+  '/questions/{questionId}':
+    patch:
+      tags:
+        - question
+      summary: Update an existing question
+      operationId: updateQuestion
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+        - name: questionId
+          in: path
+          required: true
+          description: The ID of a specific question
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Question not found
+        '405':
+          description: Validation exception
+      security:
+        - Oauth2:
+            - 'write:questions'
+            - 'read:questions'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/PatchRequest'
+    get:
+      tags:
+        - question
+      summary: Get question by ID
+      description: Returns a single question
+      operationId: getQuestionById
+      parameters:
+        - name: questionId
+          in: path
+          description: ID of Topic to return
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Question not found
+    delete:
+      tags:
+        - question
+      summary: Deletes a question
+      operationId: deleteQuestion
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+        - name: questionId
+          in: path
+          description: question id to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Question not found
+      security:
+        - Oauth2:
+            - 'write:questions'
+            - 'read:questions'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+  /games:
+    post:
+      tags:
+        - game
+      summary: Create one or more new game
+      operationId: addGames
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        '405':
+          description: Invalid input
+      security:
+        - Oauth2:
+            - 'write:games'
+            - 'read:games'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Game'
+        description: game object that needs to be added
+        required: true
+    get:
+      tags:
+        - game
+      summary: get all games of app with pagination
+      operationId: getGames
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+        - name: offset
+          in: query
+          description: Starting position of result set
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          description: No of result set you want to retreive
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Game'
+      security:
+        - Oauth2:
+            - 'read:games'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+  '/games/{gameId}':
+    patch:
+      tags:
+        - game
+      summary: Update an existing game
+      operationId: updateGame
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+        - name: gameId
+          in: path
+          required: true
+          description: The id of a specific game
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+        '400':
+          description: Invalid game id supplied
+        '404':
+          description: Game not found
+        '405':
+          description: Validation exception
+      security:
+        - Oauth2:
+            - 'write:games'
+            - 'read:games'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/PatchRequest'
+    get:
+      tags:
+        - game
+      summary: Get game by id
+      description: Returns a single game
+      operationId: getGameById
+      parameters:
+        - name: gameId
+          in: path
+          description: ID of game to return
+          required: true
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          description: Starting position of result set
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          description: No of result set you want to retreive
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+        '400':
+          description: Invalid Id supplied
+        '404':
+          description: Game not found
+    delete:
+      tags:
+        - game
+      summary: Deletes a game
+      operationId: deleteGame
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+        - name: gameId
+          in: path
+          description: game id to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        '400':
+          description: Invalid game id supplied
+        '404':
+          description: Game not found
+      security:
+        - Oauth2:
+            - 'write:games'
+            - 'read:games'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+  /search:
+    get:
+      tags:
+        - others
+      summary: search topic and users
+      description: Returns a paginated list of search result
+      operationId: search
+      parameters:
+        - in: query
+          name: value
+          description: The search text
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: type
+          description: The search type (user or topic or all)
+          required: true
+          schema:
+            type: string
+            enum:
+              - user
+              - topic
+              - all
+            default: all
+        - name: offset
+          in: query
+          description: Starting position of result set
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          description: Number of result set you want to retreive
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                description: List of user profiles and topics
+        '400':
+          description: Invalid search text supplied
+        '404':
+          description: No result
+      security:
+        - Oauth2:
+            - 'read:topics'
+        - ApiKeyAuth: []
+          UserIdAuth: []
+  /notifications:
+    post:
+      tags:
+        - notification
+      summary: Create one or more notifications
+      operationId: saveNotifications
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        '405':
+          description: Invalid input
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Notification'
+        description: notification object that needs to be sent
+        required: true
+  '/notifications/{userId}':
+    get:
+      tags:
+        - notification
+      summary: get all notifications of a user with pagination
+      operationId: getNotifications
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+        - name: userId
+          in: path
+          required: true
+          description: The id of user
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          description: Starting position of result set
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          description: No of result set you want to retreive
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+components:
+  schemas:
+    SignInRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: email address
+          example: shravan.jha+100@gmail.com
+        password:
+          type: string
+          format: password
+          description: password in plain text
+          example: password
+    SignInResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+        token:
+          type: string
+    SignInApiResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          default: false
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/SignInResponse'
+    Contact:
+      type: object
+      required:
+        - email
+        - name
+        - subject
+        - message
+      properties:
+        email:
+          type: string
+          format: email
+          description: email address
+          example: shravan.jha+100@gmail.com
+        name:
+          type: string
+          example: Shravan Jha
+        mobile:
+          type: string
+          example: 0999999999
+        subject:
+          type: string
+          example: Technical Error
+        message:
+          type: string
+          example: Unable to add a new topic
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        parentId:
+          type: integer
+        createdOn:
+          type: string
+          format: date-time
+        updatedOn:
+          type: string
+          format: date-time
+      xml:
+        name: Category
+    Interest:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        category:
+          $ref: '#/components/schemas/Category'
+        createdOn:
+          type: string
+          format: date-time
+        updatedOn:
+          type: string
+          format: date-time
+      xml:
+        name: Interest
+    Achievement:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        image:
+          type: string
+          format: url
+        createdOn:
+          type: string
+          format: date-time
+        updatedOn:
+          type: string
+          format: date-time
+      xml:
+        name: Interest
+    User:
+      type: object
+      required:
+        - email
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        password:
+          type: string
+        salt:
+          type: string
+        token:
+          type: string
+        subscribed:
+          type: boolean
+        verified:
+          type: boolean
+        verificationStatus:
+          type: string
+        verificationToken:
+          type: string
+        loginProvider:
+          type: string
+          description: Login Using
+          enum:
+            - poppyquiz
+            - facebook
+            - twitter
+            - google
+            - linkedin
+        facebookId:
+          type: string
+        googleId:
+          type: string
+        linkedinId:
+          type: string
+        twitterId:
+          type: string
+        accountPrivacy:
+          type: string
+          description: Account Privacy
+          enum:
+            - everyone
+            - all_friends
+            - friends_of_friends
+            - self
+        referId:
+          type: integer
+        referredId:
+          type: integer
+        createdOn:
+          type: string
+          format: date-time
+        updatedOn:
+          type: string
+          format: date-time
+      xml:
+        name: User
+    UserProfile:
+      type: object
+      required:
+        - firstName      
+        - lastname
+        - gender
+        - dateOfBirth
+        - address
+      properties:
+        userName:
+          type: string
+          example: shravanjha100  
+        firstName:
+          type: string
+          example: Shravan100
+        lastName:
+          type: string
+          example: Jha100
+        gender:
+          type: string
+          description: Gender
+          enum:
+            - male
+            - female
+            - unspecified
+        dateOfBirth:
+          type: string
+          description: Date of Birth in mm/dd/yyyy format
+          example: 09/08/1980
+        language:
+          type: string
+          example: English
+        mobile:
+          type: string
+          example: 0999999999
+        tagLine:
+          type: string
+          example: Hello World 100
+        address:
+          type: string
+          example: Lalor Park, NSW
+      xml:
+        name: UserProfile
+    UserProfileCard:
+      type: object
+      required:
+        - firstName      
+        - lastname
+        - gender
+        - dateOfBirth
+        - address
+      properties:
+        userName:
+          type: string
+          example: shravanjha100  
+        firstName:
+          type: string
+          example: Shravan100
+        lastName:
+          type: string
+          example: Jha100
+        gender:
+          type: string
+          description: Gender
+          enum:
+            - male
+            - female
+            - unspecified
+        dateOfBirth:
+          type: string
+          description: Date of Birth in mm/dd/yyyy format
+          example: 09/08/1980
+        language:
+          type: string
+          example: English
+        profileImageUrl:
+          type: string
+        wallImageUrl:
+          type: string          
+        tagLine:
+          type: string
+          example: Hello World 100
+        address:
+          type: string
+          example: Lalor Park, NSW
+        country:
+          type: string
+          example: Australia        
+        level:
+          type: string
+          description: "User Level"
+          enum:
+          - "Beginner"
+          - "Novice"
+          - "Competent"
+          - "Professional"
+          - "Veteran"
+          - "Master"          
+        status:
+          type: string
+          description: "Player Status"
+          enum:
+          - "Online"
+          - "Offline"           
+        experiencePoint:
+          type: integer
+      xml:
+        name: UserProfileCard        
+    UserSummary:
+      type: object
+      properties:
+        games:
+          type: integer
+        topicsCreated:
+          type: integer
+        topicsFollowed:
+          type: integer
+        folllowers:
+          type: integer
+        followings:
+          type: integer
+    UserAchievement:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          $ref: '#/components/schemas/Achievement'
+        createdOn:
+          type: string
+          format: date-time
+        updatedOn:
+          type: string
+          format: date-time
+    UserFollowing:
+      type: object
+      properties:
+        id:
+          type: integer
+        followedId:
+          type: integer
+        followerId:
+          type: integer
+        createdOn:
+          type: string
+          format: date-time
+        updatedOn:
+          type: string
+          format: date-time
+      xml:
+        name: UserFollowing
+    Referral:
+      type: object
+      required:
+        - senderId
+        - receiverEmail
+        - status
+      properties:
+        id:
+          type: integer
+        senderId:
+          type: integer
+        receiverId:
+          type: integer
+        receiverEmail:
+          type: string
+          format: email
+          example: shravan.jha+200@gmail.com
+        status:
+          type: string
+          description: Referral Status
+          enum:
+            - sent
+            - accepted
+      xml:
+        name: ReferralRequest
+    UserInterest:
+      type: object
+      properties:
+        id:
+          type: integer
+        interest:
+          $ref: '#/components/schemas/Interest'
+        createdOn:
+          type: string
+          format: date-time
+        updatedOn:
+          type: string
+          format: date-time
+      xml:
+        name: UserInterest
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+      xml:
+        name: Tag
+    Topic:
+      type: object
+      required:
+        - name
+        - tagline
+        - language
+        - image
+        - positionX
+        - positionY
+        - bgColor
+        - category
+        - active
+        - complete
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        tagline:
+          type: string
+        language:
+          type: string
+        image:
+          type: string
+        positionX:
+          type: string
+        positionY:
+          type: string
+        bgColor:
+          type: string
+        category:
+          $ref: '#/components/schemas/Category'
+        active:
+          type: boolean
+        complete:
+          type: boolean
+        tags:
+          type: array
+          xml:
+            name: tag
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/Tag'
+        createdOn:
+          type: string
+          format: date-time
+        updatedOn:
+          type: string
+          format: date-time
+      xml:
+        name: Topic
+    TopicFollowing:
+      type: object
+      properties:
+        id:
+          type: integer
+        topicId:
+          type: integer
+        followerId:
+          type: integer
+        createdOn:
+          type: string
+          format: date-time
+        updatedOn:
+          type: string
+          format: date-time
+      xml:
+        name: TopicFollowing
+    Question:
+      type: object
+      properties:
+        id:
+          type: integer
+        text:
+          type: string
+        imageUrl:
+          type: string
+        hint:
+          type: string
+        reference:
+          type: string
+        active:
+          type: boolean
+          default: false
+        level:
+          type: string
+          description: Difficulty Level
+          enum:
+            - beginner
+            - easy
+            - intermediate
+            - hard
+            - extreme
+        stage:
+          type: integer
+          format: short
+          description: stage for a level. Each stage can have maximum 10 questions
+        options:
+          type: array
+          xml:
+            name: option
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/Option'
+        answerTime:
+          type: integer
+          description: allocated time in second to answer the question
+          default: 10
+        topicId:
+          type: integer
+        createdBy:
+          type: string
+          format: integer
+        createdOn:
+          type: string
+          format: date-time
+        updatedOn:
+          type: string
+          format: date-time
+      xml:
+        name: Question
+    Option:
+      type: object
+      properties:
+        id:
+          type: integer
+        text:
+          type: string
+        imageUrl:
+          type: string
+        active:
+          type: boolean
+          default: false
+        correct:
+          type: boolean
+          default: false
+        sequence:
+          type: integer
+          format: short
+          description: Display sequence for option
+          enum:
+            - 1
+            - 2
+            - 3
+            - 4
+        createdOn:
+          type: string
+          format: date-time
+        updatedOn:
+          type: string
+          format: date-time
+      xml:
+        name: Option
+    Game:
+      type: object
+      properties:
+        id:
+          type: integer
+        topic:
+          $ref: '#/components/schemas/Topic'
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Question'
+        players:
+          type: array
+          items:
+            $ref: '#/components/schemas/Player'
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        createdBy:
+          type: integer
+        createdOn:
+          type: string
+          format: date-time
+        updatedOn:
+          type: string
+          format: date-time
+      xml:
+        name: Game
+    Player:
+      type: object
+      properties:
+        id:
+          type: integer
+        playerId:
+          type: integer
+        displayName:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        profileImage:
+          type: string
+          format: uri
+        experiencePoint:
+          type: number
+        status:
+          type: string
+          description: Player Status
+          enum:
+            - online
+            - offline
+        initiated:
+          type: boolean
+          default: false
+        joined:
+          type: boolean
+          default: false
+        finished:
+          type: boolean
+          default: false
+        totalScore:
+          type: number
+        answers:
+          type: array
+          xml:
+            name: answer
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/Answer'
+        createdBy:
+          type: integer
+        createdOn:
+          type: string
+          format: date-time
+        updatedOn:
+          type: string
+          format: date-time
+      xml:
+        name: Player
+    Answer:
+      type: object
+      properties:
+        id:
+          type: integer
+        questionId:
+          type: integer
+        questionText:
+          type: string
+        correctOptionId:
+          type: integer
+        correctOptionText:
+          type: string
+        selectedOptionId:
+          type: integer
+        selectedOptionText:
+          type: string
+        score:
+          type: number
+        createdOn:
+          type: string
+          format: date-time
+        updatedOn:
+          type: string
+          format: date-time
+      xml:
+        name: Answer
+    GameSummary:
+      type: object
+      properties:
+        played:
+          type: integer
+        won:
+          type: integer
+        lost:
+          type: integer
+        draw:
+          type: integer
+        selfMode:
+          type: integer
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+        to:
+          $ref: '#/components/schemas/UserProfile'
+        link:
+          type: string
+          description: The URL that clicking on the notification would take someone
+        typeName:
+          type: string
+          description: Notification type
+        text:
+          type: string
+          description: html content displayed in notification
+        read:
+          type: boolean
+          default: false
+        createdOn:
+          type: string
+          format: date-time
+        updatedOn:
+          type: string
+          format: date-time
+      xml:
+        name: Notification
+    NotificationType:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          description: name of notification type
+        description:
+          type: string
+          description: description of notification when it will be sent
+        applicableType:
+          type: string
+          enum:
+            - user
+            - topic
+            - game
+            - app
+          description: >-
+            Subject of the notification
+            Post|Comment|GameInvite|FollowTopic|FollowUser|ProfileUpdate type
+        content:
+          type: string
+          description: html template for notification
+        createdOn:
+          type: string
+          format: date-time
+        updatedOn:
+          type: string
+          format: date-time
+      xml:
+        name: Notification
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+        from:
+          $ref: '#/components/schemas/UserProfile'
+        to:
+          type: array
+          xml:
+            name: profile
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/UserProfile'
+        link:
+          type: string
+          description: Link attached to the post
+        subject:
+          type: object
+          description: >-
+            Subject of the notification
+            Post|Comment|GameInvite|FollowTopic|FollowUser|ProfileUpdate type
+        type:
+          type: string
+          description: Post type
+          enum:
+            - updated_profile
+            - shared_story
+            - liked_story
+            - commentedOn_story
+            - wall_post
+            - topic_post
+            - published_topic
+            - updated_topic
+            - postOn_followed_topic
+            - gameOn_followed_topic
+            - edit_followed_topic
+            - achievement
+            - app_post
+            - sponsered_post
+        story:
+          type: string
+          description: html content displayed in post
+        read:
+          type: boolean
+          default: false
+        hidden:
+          type: boolean
+          default: false
+        published:
+          type: boolean
+          default: false
+        spam:
+          type: boolean
+          default: false
+        sharesCount:
+          type: number
+        likesCount:
+          type: number
+        privacy:
+          $ref: '#/components/schemas/Privacy'
+        parentId:
+          type: integer
+          description: 'The ID of a parent post for this post, if it exists.'
+        createdOn:
+          type: string
+          format: date-time
+        updatedOn:
+          type: string
+          format: date-time
+      xml:
+        name: Post
+    Comment:
+      type: object
+      properties:
+        id:
+          type: integer
+        from:
+          $ref: '#/components/schemas/UserProfile'
+        message:
+          type: string
+          description: html content displayed in comment
+        commentsCount:
+          type: number
+          description: Number of replies to this comment
+        likesCount:
+          type: number
+          description: Number of times this comment was liked
+        parent:
+          $ref: '#/components/schemas/Comment'
+        createdOn:
+          type: string
+          format: date-time
+        updatedOn:
+          type: string
+          format: date-time
+      xml:
+        name: Comment
+    Privacy:
+      type: object
+      properties:
+        id:
+          type: integer
+        description:
+          type: string
+          description: >-
+            Text that describes the privacy settings, as they would appear on
+            PoppyQuiz
+        value:
+          type: string
+          description: The actual privacy setting
+          enum:
+            - everyone
+            - all_friends
+            - friends_of_friends
+            - self
+            - custom
+        allow:
+          type: array
+          description: >-
+            If value is CUSTOM, this is a comma-separated ID list of users and
+            friendlists (if any) that can see the post.
+          items:
+            type: string
+        deny:
+          type: array
+          description: >-
+            If value is CUSTOM, this is a comma-separated ID list of users and
+            friendlists (if any) that cannot see the post
+          items:
+            type: string
+        createdOn:
+          type: string
+          format: date-time
+        updatedOn:
+          type: string
+          format: date-time
+      xml:
+        name: Privacy
+    PatchRequest:
+      type: array
+      items:
+        $ref: '#/components/schemas/PatchDocument'
+    PatchDocument:
+      description: A JSONPatch document as defined by RFC 6902
+      required:
+        - op
+        - path
+      properties:
+        op:
+          type: string
+          description: The operation to be performed
+          enum:
+            - add
+            - remove
+            - replace
+            - move
+            - copy
+            - test
+        path:
+          type: string
+          description: A JSON-Pointer
+        value:
+          type: object
+          description: The value to be used within the operations.
+        from:
+          type: string
+          description: A string containing a JSON Pointer value.
+      type: object
+    ApiResponse:
+      description: Default API response    
+      type: object
+      required:
+      - success
+      - timestamp
+      - message
+      properties:
+        success:
+          type: boolean
+          default: false
+        httpResponseCode:
+          type: integer
+          format: int32
+        message:
+          description: Human readable message
+          type: string
+        result:
+          type: object          
+        errors:
+          type: array
+          xml:
+            name: error
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/ApiResponseError'
+        timestamp:
+          description: UTC timestamp in ISO 8601 format
+          type: string            
+    ApiResponseError:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        description:
+          type: string
+  requestBodies:
+    SignInRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SignInRequest'
+      description: Created SignIn Request object
+      required: true
+    ContactRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Contact'
+      description: Created Contact Request object
+      required: true      
+    SubscribeRequest:
+      content:
+        application/json:
+          schema:
+            type: string
+            format: email
+      required: true
+    ForgotPasswordRequest:
+      content:
+        application/json:
+          schema:
+            type: string
+            format: email
+      required: true
+    ResetPasswordRequest:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - oldPassword
+              - newPassword
+            properties:
+              oldPassword:
+                type: string
+              newPassword:
+                type: string
+      required: true      
+    ReferralRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Referral'
+      description: Created Refer Request object
+      required: true         
+    UserProfile:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserProfile'
+      description: Updated user profile object
+      required: true
+    addTopicsToCategoryTopics:
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: integer
+      description: The array of topicIds
+      required: true
+    PatchRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PatchRequest'
+      required: true
+  responses:
+    ApiResponse:
+      description: Successful Operation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'  
+    NotFound:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'  
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'   
+    ServerError:
+      description: Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'            
+    ReferApiResponse:
+      description: Successful Operation
+      content:
+        application/json:
+          schema:
+            type: array
+            items: 
+              $ref: '#/components/schemas/Referral' 
+    ProfileApiResponse:
+      description: Successful Operation
+      content:
+        application/json:
+          schema:
+            type: array
+            items: 
+              $ref: '#/components/schemas/UserProfileCard'              
+  securitySchemes:
+    Oauth2:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: 'https://poppyquiz.com/login/oauth2'
+          scopes:
+            'write:categories': modify categories in your app
+            'read:categories': read categories
+            'write:topics': modify topics in your account
+            'read:topics': read your topics
+            'write:questions': modify questions in your account
+            'read:questions': read your questions
+            'read:profiles': read your profiles
+            'write:profiles': update your profiles
+            'write:games': modify games in your account
+            'read:games': read your games
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+    UserIdAuth:
+      type: apiKey
+      in: header
+      name: X-USER-ID
+security:
+  - ApiKeyAuth: []
+    UserIdAuth: []
